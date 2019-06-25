@@ -20,11 +20,14 @@ namespace IoTMonitor.Actors
         {
             switch (message)
             {
-                case RequestMetadata m:
-                    Sender.Tell(new RespondMetadata(m.RequestId, _floorId, _sensorId));
+                case MetadataRequest m:
+                    Sender.Tell(new MetadataResponse(m.RequestId, _floorId, _sensorId));
                     break;
-                case RequestTemperature m:
-                    Sender.Tell(new RespondTemperature(m.RequestId, _lastRecordedTemperature));
+                case TemperatureRequest m:
+                    Sender.Tell(new TemperatureResponse(m.RequestId, _lastRecordedTemperature));
+                    break;
+                case TemperatureUpdateRequest m:
+                    Sender.Tell(new TemperatureUpdateResponse(m.RequestId, _lastRecordedTemperature));
                     break;
                 default:
                     break;

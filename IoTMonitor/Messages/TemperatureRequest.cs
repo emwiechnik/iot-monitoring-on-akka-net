@@ -4,10 +4,10 @@ using System.Text;
 
 namespace IoTMonitor.Messages
 {
-    public class RequestTemperature
+    public class TemperatureRequest
     {
         public long RequestId { get; }
-        public RequestTemperature(long requestId)
+        public TemperatureRequest(long requestId)
         {
             RequestId = requestId;
         }

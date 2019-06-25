@@ -1,6 +1,7 @@
 ﻿using Akka.TestKit.Xunit2;
 using IoTMonitor.Actors;
 using IoTMonitor.Messages;
+using IoTMonitor.ValueTypes;
 using Xunit;
 
 namespace IoTMonitor.Tests
@@ -18,9 +19,9 @@ namespace IoTMonitor.Tests
             var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
 
             // Act
-            sensor.Tell(new RequestMetadata(parameters.RequestId), probe.Ref);
+            sensor.Tell(new MetadataRequest(parameters.RequestId), probe.Ref);
 
-            var received = probe.ExpectMsg<RespondMetadata>();
+            var received = probe.ExpectMsg<MetadataResponse>();
 
             // Assert
             Assert.Equal(parameters.RequestId, received.RequestId);
@@ -31,17 +32,40 @@ namespace IoTMonitor.Tests
         [Fact]
         public void Start_With_No_Recorded_Temperature()
         {
+            // Arrange
             var probe = CreateTestProbe();
 
             var parameters = new { FloorId = "A", SensorId = "123", RequestId = 1 };
 
             var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
 
-            sensor.Tell(new RequestTemperature(parameters.RequestId), probe.Ref);
+            // Act
+            sensor.Tell(new TemperatureRequest(parameters.RequestId), probe.Ref);
 
-            var received = probe.ExpectMsg<RespondTemperature>();
+            var received = probe.ExpectMsg<TemperatureResponse>();
 
+            // Assert
             Assert.Null(received.Temperature);
+        }
+
+        [Fact]
+        public void Confirm_Temperature_Got_Updated()
+        {
+            // Arrange
+            var probe = CreateTestProbe();
+
+            var parameters = new { FloorId = "A", SensorId = "123", RequestId = 1, NewTemperature = new Temperature(100) };
+
+            var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
+
+            // Act
+            sensor.Tell(new TemperatureUpdateRequest(parameters.RequestId, parameters.NewTemperature), probe.Ref);
+
+            var received = probe.ExpectMsg<TemperatureUpdateResponse>();
+
+            // Assert
+            Assert.NotNull(received.Temperature);
+            Assert.Equal(parameters.NewTemperature.Value, received.Temperature.Value);
         }
     }
 }

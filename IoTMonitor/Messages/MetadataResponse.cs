@@ -4,13 +4,13 @@ using System.Text;
 
 namespace IoTMonitor.Messages
 {
-    public sealed class RespondMetadata
+    public sealed class MetadataResponse
     {
         public long RequestId { get; }
         public string FloorId { get; }
         public string SensorId { get; }
 
-        public RespondMetadata(long requestId, string floorId, string sensorId)
+        public MetadataResponse(long requestId, string floorId, string sensorId)
         {
             RequestId = requestId;
             FloorId = floorId;

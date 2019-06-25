@@ -1,8 +1,8 @@
 ﻿namespace IoTMonitor.Messages
 {
-    public sealed class RequestMetadata
+    public sealed class MetadataRequest
     {
-        public RequestMetadata(long requestId)
+        public MetadataRequest(long requestId)
         {
             RequestId = requestId;
         }
