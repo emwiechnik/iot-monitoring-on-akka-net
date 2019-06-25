@@ -27,7 +27,8 @@ namespace IoTMonitor.Actors
                     Sender.Tell(new TemperatureResponse(m.RequestId, _lastRecordedTemperature));
                     break;
                 case TemperatureUpdateRequest m:
-                    Sender.Tell(new TemperatureUpdateResponse(m.RequestId, _lastRecordedTemperature));
+                    _lastRecordedTemperature = m.NewTemperature;
+                    Sender.Tell(new TemperatureUpdateResponse(m.RequestId));
                     break;
                 default:
                     break;

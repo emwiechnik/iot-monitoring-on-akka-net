@@ -64,8 +64,28 @@ namespace IoTMonitor.Tests
             var received = probe.ExpectMsg<TemperatureUpdateResponse>();
 
             // Assert
-            Assert.NotNull(received.Temperature);
-            Assert.Equal(parameters.NewTemperature.Value, received.Temperature.Value);
+            Assert.Equal(parameters.RequestId, received.RequestId);
+        }
+
+        [Fact]
+        public void Update_Temperature_As_Requested()
+        {
+            // Arrange
+            var probe = CreateTestProbe();
+
+            var parameters = new { FloorId = "A", SensorId = "123", UpdateRequestId = 1, RetrieveRequestId = 2, NewTemperature = new Temperature(100) };
+
+            var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
+
+            // Act
+            sensor.Tell(new TemperatureUpdateRequest(parameters.UpdateRequestId, parameters.NewTemperature), Akka.Actor.ActorRefs.NoSender);
+            sensor.Tell(new TemperatureRequest(parameters.RetrieveRequestId), probe.Ref);
+
+            var received = probe.ExpectMsg<TemperatureResponse>();
+
+            // Assert
+            Assert.Equal(parameters.RetrieveRequestId, received.RequestId);
+            Assert.Equal(parameters.NewTemperature, received.Temperature);
         }
     }
 }
