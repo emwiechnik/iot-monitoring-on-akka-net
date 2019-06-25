@@ -27,5 +27,21 @@ namespace IoTMonitor.Tests
             Assert.Equal(parameters.FloorId, received.FloorId);
             Assert.Equal(parameters.SensorId, received.SensorId);
         }
+
+        [Fact]
+        public void Start_With_No_Recorded_Temperature()
+        {
+            var probe = CreateTestProbe();
+
+            var parameters = new { FloorId = "A", SensorId = "123", RequestId = 1 };
+
+            var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
+
+            sensor.Tell(new RequestTemperature(parameters.RequestId), probe.Ref);
+
+            var received = probe.ExpectMsg<RespondTemperature>();
+
+            Assert.Null(received.Temperature);
+        }
     }
 }

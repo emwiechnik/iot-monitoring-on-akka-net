@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using IoTMonitor.Messages;
+using IoTMonitor.ValueTypes;
 
 namespace IoTMonitor.Actors
 {
@@ -7,6 +8,7 @@ namespace IoTMonitor.Actors
     {
         private readonly string _floorId;
         private readonly string _sensorId;
+        private Temperature _lastRecordedTemperature;
 
         public TemperatureSensor(string floorId, string sensorId)
         {
@@ -20,6 +22,9 @@ namespace IoTMonitor.Actors
             {
                 case RequestMetadata m:
                     Sender.Tell(new RespondMetadata(m.RequestId, _floorId, _sensorId));
+                    break;
+                case RequestTemperature m:
+                    Sender.Tell(new RespondTemperature(m.RequestId, _lastRecordedTemperature));
                     break;
                 default:
                     break;
