@@ -1,12 +1,9 @@
 ﻿namespace IoTMonitor.Messages
 {
-    public class TemperatureUpdateResponse
+    public sealed class TemperatureUpdateResponse: BaseMessage
     {
-        public long RequestId { get; }
-
-        public TemperatureUpdateResponse(long requestId)
+        public TemperatureUpdateResponse(long requestId) : base(requestId)
         {
-            RequestId = requestId;
         }
     }
 }

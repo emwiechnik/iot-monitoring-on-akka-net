@@ -1,11 +1,11 @@
 ﻿namespace IoTMonitor.Messages
 {
-    public sealed class MetadataResponse: BaseMessage
+    public sealed class SensorRegistrationRequest: BaseMessage
     {
         public string FloorId { get; }
         public string SensorId { get; }
 
-        public MetadataResponse(long requestId, string floorId, string sensorId) : base(requestId)
+        public SensorRegistrationRequest(long requestId, string floorId, string sensorId) : base(requestId)
         {
             FloorId = floorId;
             SensorId = sensorId;

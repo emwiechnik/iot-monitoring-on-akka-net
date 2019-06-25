@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IoTMonitor.Messages
+﻿namespace IoTMonitor.Messages
 {
-    public class TemperatureRequest
+    public sealed class TemperatureRequest: BaseMessage
     {
-        public long RequestId { get; }
-        public TemperatureRequest(long requestId)
+        public TemperatureRequest(long requestId) : base(requestId)
         {
-            RequestId = requestId;
         }
     }
 }
