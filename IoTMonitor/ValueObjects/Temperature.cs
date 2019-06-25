@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IoTMonitor.ValueTypes
+﻿namespace IoTMonitor.ValueObjects
 {
     public class Temperature
     {

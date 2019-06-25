@@ -1,7 +1,7 @@
 ﻿using Akka.TestKit.Xunit2;
 using IoTMonitor.Actors;
 using IoTMonitor.Messages;
-using IoTMonitor.ValueTypes;
+using IoTMonitor.ValueObjects;
 using Xunit;
 
 namespace IoTMonitor.Tests

@@ -1,4 +1,4 @@
-﻿using IoTMonitor.ValueTypes;
+﻿using IoTMonitor.ValueObjects;
 
 namespace IoTMonitor.Messages
 {

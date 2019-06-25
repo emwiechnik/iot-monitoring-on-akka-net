@@ -1,6 +1,6 @@
 ﻿using Akka.Actor;
 using IoTMonitor.Messages;
-using IoTMonitor.ValueTypes;
+using IoTMonitor.ValueObjects;
 
 namespace IoTMonitor.Actors
 {
