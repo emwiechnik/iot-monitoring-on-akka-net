@@ -30,7 +30,11 @@ namespace IoTMonitor.Actors
                     _lastRecordedTemperature = m.NewTemperature;
                     Sender.Tell(new TemperatureUpdateResponse(m.RequestId));
                     break;
+                case SensorRegistrationRequest m when m.FloorId == _floorId && m.SensorId == _sensorId:
+                    Sender.Tell(new SensorRegistrationResponse(m.RequestId, Context.Self));
+                    break;
                 default:
+                    Unhandled(message);
                     break;
             }
         }

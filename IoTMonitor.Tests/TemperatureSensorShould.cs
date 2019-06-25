@@ -1,4 +1,5 @@
-﻿using Akka.TestKit.Xunit2;
+﻿using Akka.Dispatch.SysMsg;
+using Akka.TestKit.Xunit2;
 using IoTMonitor.Actors;
 using IoTMonitor.Messages;
 using IoTMonitor.ValueObjects;
@@ -89,12 +90,12 @@ namespace IoTMonitor.Tests
         }
 
         [Fact]
-        public void Register_New_Sensor()
+        public void Register_Itself()
         {
             // Arrange
             var probe = CreateTestProbe();
 
-            var parameters = new { FloorId = "A", SensorId = "123", RequestId = 2 };
+            var parameters = new { FloorId = "A", SensorId = "123", RequestId = 100 };
 
             var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
 
@@ -105,7 +106,53 @@ namespace IoTMonitor.Tests
 
             // Assert
             Assert.Equal(parameters.RequestId, received.RequestId);
-            Assert.NotNull(received.SensorReference);
+            Assert.Equal(sensor, received.SensorReference);
+        }
+
+        [Fact]
+        public void Not_Register_Itself_When_Incorrect_Floor()
+        {
+            // Arrange
+            var probe = CreateTestProbe();
+            var eventStreamProbe = CreateTestProbe();
+
+            var parameters = new { SensorFloorId = "A", RegisteredSensorFloorId = "B", SensorId = "123", RequestId = 100 };
+
+            Sys.EventStream.Subscribe(eventStreamProbe, typeof(Akka.Event.UnhandledMessage));
+
+            var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.SensorFloorId, parameters.SensorId));
+
+            // Act
+            sensor.Tell(new SensorRegistrationRequest(parameters.RequestId, parameters.RegisteredSensorFloorId, parameters.SensorId), probe.Ref);
+
+            probe.ExpectNoMsg();
+            var unhandled = eventStreamProbe.ExpectMsg<Akka.Event.UnhandledMessage>();
+
+            // Assert
+            Assert.IsType<SensorRegistrationRequest>(unhandled.Message);
+        }
+
+        [Fact]
+        public void Not_Register_Itself_When_Incorrect_Sensor()
+        {
+            // Arrange
+            var probe = CreateTestProbe();
+            var eventStreamProbe = CreateTestProbe();
+
+            var parameters = new { FloorId = "A", SensorId = "123", RegisteredSensorId = "124", RequestId = 100 };
+
+            Sys.EventStream.Subscribe(eventStreamProbe, typeof(Akka.Event.UnhandledMessage));
+
+            var sensor = Sys.ActorOf(TemperatureSensor.Props(parameters.FloorId, parameters.SensorId));
+
+            // Act
+            sensor.Tell(new SensorRegistrationRequest(parameters.RequestId, parameters.FloorId, parameters.RegisteredSensorId), probe.Ref);
+
+            probe.ExpectNoMsg();
+            var unhandled = eventStreamProbe.ExpectMsg<Akka.Event.UnhandledMessage>();
+
+            // Assert
+            Assert.IsType<SensorRegistrationRequest>(unhandled.Message);
         }
     }
 }
