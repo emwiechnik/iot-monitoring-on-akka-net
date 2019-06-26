@@ -67,6 +67,8 @@ namespace IoTMonitor.Tests
             var unhandled = eventStreamProbe.ExpectMsg<Akka.Event.UnhandledMessage>();
 
             Assert.IsType<SensorRegistrationRequest>(unhandled.Message);
+
+            Assert.Equal(floor, unhandled.Recipient);
         }
     }
 }

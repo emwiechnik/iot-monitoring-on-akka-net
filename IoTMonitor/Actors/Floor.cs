@@ -22,7 +22,7 @@ namespace IoTMonitor.Actors
         {
             switch (message)
             {
-                case SensorRegistrationRequest m:
+                case SensorRegistrationRequest m when string.Equals(m.FloorId, _floorId, StringComparison.OrdinalIgnoreCase):
                     if (_sensors.TryGetValue(m.SensorId, out IActorRef actor))
                     {
                         actor.Forward(m);
@@ -33,6 +33,9 @@ namespace IoTMonitor.Actors
                         newSensorActor.Forward(m);
                         _sensors.Add(m.SensorId, newSensorActor);
                     }
+                    break;
+                default:
+                    Unhandled(message);
                     break;
             }
         }
