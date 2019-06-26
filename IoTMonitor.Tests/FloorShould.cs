@@ -103,5 +103,32 @@ namespace IoTMonitor.Tests
 
             Assert.Equal(0, received.Ids.Count);
         }
+
+        [Fact]
+        public void Return_Temperature_SensorIds_Only_From_Active_Actors()
+        {
+            var probe = CreateTestProbe();
+
+            var floor = Sys.ActorOf(Floor.Props("A"));
+
+            floor.Tell(new SensorRegistrationRequest(1, "A", "123"), probe.Ref);
+            probe.ExpectMsg<SensorRegistrationResponse>();
+            var firstSensor = probe.LastSender;
+
+            floor.Tell(new SensorRegistrationRequest(1, "A", "128"));
+            floor.Tell(new SensorRegistrationRequest(1, "A", "136"));
+
+            probe.Watch(firstSensor);
+
+            firstSensor.Tell(PoisonPill.Instance);
+            probe.ExpectTerminated(firstSensor);
+
+            floor.Tell(new TemperatureSensorIdsRequest(1), probe.Ref);
+            var received = probe.ExpectMsg<TemperatureSensorIdsResponse>();
+
+            Assert.Equal(2, received.Ids.Count);
+            Assert.Contains("128", received.Ids);
+            Assert.Contains("136", received.Ids);
+        }
     }
 }
